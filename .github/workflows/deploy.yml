@@ -1,0 +1,40 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - alpha
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Build (main)
+        if: github.ref == 'refs/heads/main'
+        run: npm run build
+        env:
+          VITE_BASE: '/mwtierlist/'
+      
+      - name: Build (alpha)
+        if: github.ref == 'refs/heads/alpha'
+        run: npm run build
+        env:
+          VITE_BASE: '/mwtierlist-alpha/'
+      
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          destination_dir: ${{ github.ref == 'refs/heads/alpha' && 'alpha' || '.' }}
