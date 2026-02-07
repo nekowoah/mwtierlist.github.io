@@ -6,6 +6,9 @@ on:
       - main
       - alpha
 
+permissions:
+  contents: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
